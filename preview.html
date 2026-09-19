@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaBank — Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#0a0e17',
+              900: '#0f1419',
+              800: '#151b25',
+              700: '#1a2332',
+              600: '#243044',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0a0e17; color: #e5e7eb; margin: 0; }
+    .card { background: rgba(21,27,37,0.9); border: 1px solid rgba(36,48,68,0.8); border-radius: 1rem; }
+    .btn { background: #2563eb; color: white; border-radius: 0.75rem; padding: 0.65rem 1.25rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+    .btn:hover { background: #3b82f6; }
+    .btn-outline { background: transparent; border: 1px solid #243044; color: #e5e7eb; }
+    .input { width: 100%; background: rgba(15,20,25,0.9); border: 1px solid #243044; border-radius: 0.75rem; padding: 0.65rem 1rem; color: #f3f4f6; outline: none; }
+    .input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: block; }
+    .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.75rem; border-radius: 0.75rem; color: #9ca3af; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+    .nav-item:hover, .nav-item.active { background: rgba(37,99,235,0.15); color: #60a5fa; }
+    @media (max-width: 1023px) {
+      .sidebar { display: none !important; }
+      .main-wrap { margin-left: 0 !important; }
+      .mobile-nav { display: flex !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ========== LOGIN ========== -->
+  <div id="login" class="screen active">
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg shadow-blue-600/30 mb-4 text-2xl">🏦</div>
+          <h1 class="text-2xl font-bold text-white">Welcome back</h1>
+          <p class="text-gray-400 mt-1">Sign in to your NovaBank account</p>
+        </div>
+        <div class="card p-6 sm:p-8 space-y-4">
+          <div>
+            <label class="block text-sm text-gray-400 mb-1.5">Email</label>
+            <input class="input" type="email" id="loginEmail" placeholder="you@example.com" value="admin@novabank.com" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1.5">Password</label>
+            <input class="input" type="password" id="loginPass" placeholder="••••••••" value="admin123" />
+          </div>
+          <button class="btn w-full py-3" onclick="doLogin()">Sign In</button>
+          <p class="text-center text-sm text-gray-400">
+            Don't have an account?
+            <a href="#" class="text-blue-400 font-medium" onclick="show('signup'); return false;">Sign up</a>
+          </p>
+        </div>
+        <p class="text-center text-xs text-gray-600 mt-6">Admin: admin@novabank.com / admin123 · Users start with ₦0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SIGNUP ========== -->
+  <div id="signup" class="screen">
+    <div class="min-h-screen flex items-center justify-center p-4 py-10">
+      <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg mb-4 text-2xl">🏦</div>
+          <h1 class="text-2xl font-bold text-white">Create Your Account</h1>
+          <p class="text-gray-400 mt-1">Join NovaBank today</p>
+        </div>
+        <div class="card p-6 sm:p-8 space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">First Name</label>
+              <input class="input" placeholder="Alex" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Last Name</label>
+              <input class="input" placeholder="Johnson" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1.5">Email Address</label>
+            <input class="input" type="email" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1.5">Phone Number</label>
+            <input class="input" type="tel" placeholder="08012345678" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1.5">Date of Birth</label>
+            <input class="input" type="date" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1.5">Password</label>
+            <input class="input" type="password" placeholder="Min. 6 characters" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1.5">Confirm Password</label>
+            <input class="input" type="password" placeholder="••••••••" />
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer text-sm text-gray-400">
+            <input type="checkbox" class="mt-1" />
+            <span>I agree to the <span class="text-blue-400">Terms &amp; Conditions</span></span>
+          </label>
+          <button class="btn w-full py-3" onclick="alert('In the full app this creates a user with ₦0 balance. Open preview as Admin to explore.'); show('login')">Create Account</button>
+          <p class="text-center text-sm text-gray-400">
+            Already have an account?
+            <a href="#" class="text-blue-400 font-medium" onclick="show('login'); return false;">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== APP SHELL (Dashboard etc) ========== -->
+  <div id="app" class="screen">
+    <!-- Sidebar -->
+    <aside class="sidebar fixed left-0 top-0 h-screen w-64 bg-navy-900 border-r border-navy-700 flex flex-col z-40">
+      <div class="flex items-center gap-2.5 px-6 py-5 border-b border-navy-700">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">N</div>
+        <span class="text-lg font-bold text-white">NovaBank</span>
+      </div>
+      <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
+        <div class="nav-item active" onclick="setPage('dashboard')">📊 Dashboard</div>
+        <div class="nav-item" onclick="setPage('accounts')">💳 Accounts</div>
+        <div class="nav-item" onclick="setPage('transactions')">↕️ Transactions</div>
+        <div class="nav-item" onclick="setPage('transfers')">📤 Transfers</div>
+        <div class="nav-item" onclick="setPage('loans')">🤝 Loans</div>
+        <div class="nav-item" onclick="setPage('admin')">🛡️ Admin Panel</div>
+        <div class="nav-item" onclick="setPage('settings')">⚙️ Settings</div>
+      </nav>
+      <div class="p-3 border-t border-navy-700">
+        <div class="nav-item text-red-400" onclick="show('login')">🚪 Log Out</div>
+      </div>
+    </aside>
+
+    <div class="main-wrap lg:ml-64 min-h-screen pb-20 lg:pb-6">
+      <header class="sticky top-0 z-30 bg-navy-900/80 backdrop-blur border-b border-navy-700 px-4 sm:px-6 py-3 flex items-center gap-3">
+        <span class="font-semibold text-white flex-1">NovaBank</span>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold">A</div>
+      </header>
+
+      <main class="p-4 sm:p-6 max-w-7xl mx-auto">
+        <!-- DASHBOARD -->
+        <div id="page-dashboard" class="page space-y-6">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white">Good evening, Admin 👋</h1>
+            <p class="text-gray-400 mt-1">Here's your account summary</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-5 shadow-xl shadow-blue-600/20">
+              <p class="text-blue-100 text-sm font-medium mb-3">Total Balance</p>
+              <p class="text-2xl sm:text-3xl font-bold text-white">₦10,000,000.00</p>
+              <p class="text-sm text-blue-100 mt-4">View Details →</p>
+            </div>
+            <div class="card p-5">
+              <p class="text-gray-400 text-sm font-medium mb-3">Savings</p>
+              <p class="text-xl sm:text-2xl font-bold text-white">₦0.00</p>
+              <p class="text-sm text-blue-400 mt-4">View Details →</p>
+            </div>
+            <div class="card p-5">
+              <p class="text-gray-400 text-sm font-medium mb-3">Loans</p>
+              <p class="text-xl sm:text-2xl font-bold text-white">₦0.00</p>
+              <p class="text-sm text-blue-400 mt-4">View Details →</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 card overflow-hidden">
+              <div class="flex justify-between px-5 py-4 border-b border-navy-700">
+                <h2 class="font-semibold text-white">Recent Transactions</h2>
+                <span class="text-sm text-blue-400">View All</span>
+              </div>
+              <div class="p-6 text-center text-gray-500 text-sm">No transactions yet — transfer funds to users from Admin Panel</div>
+            </div>
+            <div class="card p-5 text-center">
+              <div class="text-4xl mb-3">🐷</div>
+              <h3 class="font-semibold text-white mb-1">Save more, reach your goals.</h3>
+              <p class="text-sm text-gray-400 mb-4">Start a savings plan today.</p>
+              <button class="btn text-sm">Open Savings</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN -->
+        <div id="page-admin" class="page space-y-6" style="display:none">
+          <div>
+            <h1 class="text-2xl font-bold text-white">Admin Dashboard</h1>
+            <p class="text-gray-400 text-sm mt-1">System overview · admin@novabank.com</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="card p-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center text-purple-400">👥</div>
+              <div><p class="text-sm text-gray-400">Registered Users</p><p class="text-xl font-bold text-white">0</p></div>
+            </div>
+            <div class="card p-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center text-purple-400">💰</div>
+              <div><p class="text-sm text-gray-400">Admin Balance</p><p class="text-xl font-bold text-white">₦10,000,000</p></div>
+            </div>
+            <div class="card p-4 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center text-purple-400">📋</div>
+              <div><p class="text-sm text-gray-400">Pending Loans</p><p class="text-xl font-bold text-white">0</p></div>
+            </div>
+          </div>
+          <div class="card p-5 space-y-4">
+            <h3 class="font-semibold text-white">📋 Loan Applications</h3>
+            <p class="text-sm text-gray-400">Approve to disburse funds from admin balance, or reject the application.</p>
+            <p class="text-sm text-gray-500 text-center py-4">No loan applications yet — users apply from the Loans page</p>
+          </div>
+          <div class="card p-5 space-y-4">
+            <h3 class="font-semibold text-white">📤 Transfer Funds to User</h3>
+            <p class="text-sm text-gray-400">Search users by name and credit their account. Users pay 10% activation fee before first withdrawal.</p>
+            <input class="input" placeholder="Search by name, email, phone..." />
+            <div class="border border-navy-700 rounded-xl p-3 text-sm text-gray-500 text-center">No users registered yet — create accounts via Sign up</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm text-gray-400 mb-1.5">Amount (₦)</label>
+                <input class="input" type="number" placeholder="50000" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-1.5">Note (optional)</label>
+                <input class="input" placeholder="Salary, bonus..." />
+              </div>
+            </div>
+            <button class="btn w-full py-3">Send Funds to User</button>
+          </div>
+        </div>
+
+        <!-- TRANSFERS -->
+        <div id="page-transfers" class="page space-y-6 max-w-lg" style="display:none">
+          <div>
+            <h1 class="text-2xl font-bold text-white">Transfer Money</h1>
+            <p class="text-gray-400 text-sm mt-1">Send money to any bank account (demo)</p>
+          </div>
+          <div class="card p-5 space-y-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Recipient Name</label>
+              <input class="input" placeholder="John Doe" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Bank</label>
+              <select class="input"><option>Select bank</option><option>GTBank</option><option>Access Bank</option><option>Zenith Bank</option></select>
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Account Number</label>
+              <input class="input" placeholder="0123456789" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Amount (₦)</label>
+              <input class="input" type="number" placeholder="0.00" />
+            </div>
+            <button class="btn w-full py-3">Continue</button>
+          </div>
+        </div>
+
+        <!-- LOANS -->
+        <div id="page-loans" class="page space-y-6 max-w-2xl" style="display:none">
+          <div>
+            <h1 class="text-2xl font-bold text-white">Loans</h1>
+            <p class="text-gray-400 text-sm mt-1">Apply for a loan — admin must approve &amp; fund</p>
+          </div>
+          <div class="card p-5 space-y-4">
+            <h3 class="font-semibold text-white">Loan Calculator &amp; Application</h3>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Amount (₦)</label>
+              <input class="input" type="number" placeholder="50000" />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Repayment Period</label>
+              <select class="input"><option>12 months</option><option>6 months</option><option>24 months</option></select>
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1.5">Purpose (optional)</label>
+              <input class="input" placeholder="Business, education..." />
+            </div>
+            <p class="text-xs text-amber-400/80">Demo only. Admin approves and disburses from admin balance.</p>
+            <button class="btn">Submit Application</button>
+          </div>
+        </div>
+
+        <!-- ACCOUNTS -->
+        <div id="page-accounts" class="page space-y-6 max-w-2xl" style="display:none">
+          <h1 class="text-2xl font-bold text-white">Accounts</h1>
+          <div class="rounded-2xl bg-gradient-to-br from-blue-600/20 to-navy-800 border border-blue-500/20 p-6">
+            <p class="text-sm text-gray-400 capitalize">Current Account</p>
+            <p class="text-2xl font-bold text-white mt-1">₦10,000,000.00</p>
+            <div class="mt-6 space-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-400">Account Number</span><span class="font-mono text-white">1000 0000 01</span></div>
+              <div class="flex justify-between"><span class="text-gray-400">Account Name</span><span class="text-white">Admin User</span></div>
+              <div class="flex justify-between"><span class="text-gray-400">Status</span><span class="text-emerald-400">active</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRANSACTIONS -->
+        <div id="page-transactions" class="page space-y-6" style="display:none">
+          <h1 class="text-2xl font-bold text-white">Transactions</h1>
+          <div class="card p-8 text-center text-gray-500">No transactions yet</div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div id="page-settings" class="page space-y-6 max-w-lg" style="display:none">
+          <h1 class="text-2xl font-bold text-white">Settings</h1>
+          <div class="card p-5 space-y-4">
+            <h3 class="font-semibold text-white">Profile</h3>
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold">A</div>
+              <div><p class="font-medium text-white">Admin User</p><p class="text-sm text-gray-400">admin@novabank.com</p></div>
+            </div>
+            <button class="btn btn-outline w-full" onclick="show('login')">Log Out</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Mobile bottom nav -->
+    <nav class="mobile-nav hidden fixed bottom-0 left-0 right-0 z-50 bg-navy-900/95 border-t border-navy-700 h-16 items-center justify-around">
+      <button class="text-xs text-blue-400 flex flex-col items-center gap-0.5" onclick="setPage('dashboard')">🏠<br>Home</button>
+      <button class="text-xs text-gray-500 flex flex-col items-center gap-0.5" onclick="setPage('accounts')">💳<br>Accounts</button>
+      <button class="text-xs text-gray-500 flex flex-col items-center gap-0.5" onclick="setPage('transfers')">📤<br>Transfer</button>
+      <button class="text-xs text-gray-500 flex flex-col items-center gap-0.5" onclick="setPage('admin')">🛡️<br>Admin</button>
+    </nav>
+  </div>
+
+  <script>
+    function show(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    function doLogin() {
+      show('app');
+      setPage('dashboard');
+    }
+    function setPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+      const el = document.getElementById('page-' + name);
+      if (el) el.style.display = 'block';
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    }
+  </script>
+</body>
+</html>

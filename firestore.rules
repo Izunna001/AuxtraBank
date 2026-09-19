@@ -1,0 +1,192 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userDocExists() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return userDocExists() && userDoc().role == 'admin';
+    }
+
+    // Treat missing isActive as active so profiles still work
+    function isActiveUser() {
+      return isSignedIn()
+        && (
+          !userDocExists()
+          || !('isActive' in userDoc())
+          || userDoc().isActive != false
+        );
+    }
+
+    // ─── Users ─────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      // Signup: create own profile (before or as user doc is written)
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasAll(['email', 'fullName']);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Accounts ──────────────────────────────────────────────
+    match /accounts/{accountId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && (
+          request.resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      // Owner, admin, or P2P peer may update balances
+      allow update: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+          || isActiveUser()
+        );
+      allow delete: if isAdmin();
+    }
+
+    // ─── Transactions ──────────────────────────────────────────
+    match /transactions/{txId} {
+      allow read: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+          || isActiveUser()
+        );
+      allow create: if isSignedIn()
+        && (
+          request.resource.data.userId == request.auth.uid
+          || isAdmin()
+          || isActiveUser()
+        );
+      allow update: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      allow delete: if isAdmin();
+    }
+
+    // ─── Notifications ─────────────────────────────────────────
+    match /notifications/{notifId} {
+      allow read: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      // Users and admin may create notifications for self or others (transfers, cards)
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasAny(['userId', 'title']);
+      allow update: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      allow delete: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+    }
+
+    // ─── Cards ─────────────────────────────────────────────────
+    match /cards/{cardId} {
+      allow read: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      // User adds personal card OR admin assigns card to a user
+      allow create: if isSignedIn()
+        && (
+          request.resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      allow update: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      allow delete: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+    }
+
+    // ─── Savings ───────────────────────────────────────────────
+    match /savings/{goalId} {
+      allow read: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+    }
+
+    // ─── Loans ─────────────────────────────────────────────────
+    match /loans/{loanId} {
+      allow read: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+      // Admin review / clear; user fee flags
+      allow update: if isSignedIn()
+        && (
+          isAdmin()
+          || resource.data.userId == request.auth.uid
+        );
+      allow delete: if isAdmin();
+    }
+
+    // ─── Settings (PayPal / payment details) ───────────────────
+    match /settings/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() || isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Fee payment submissions ───────────────────────────────
+    match /feePayments/{id} {
+      allow read: if isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+        );
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin() || isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Catch-all: allow signed-in users for any other collections ─
+    match /{document=**} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}
